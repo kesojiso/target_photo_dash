@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'dart:io';
 import 'package:target_photo_dash/views/display_picture.dart';
+import 'package:target_photo_dash/view_models/crop_square.dart';
 
 late List<CameraDescription> cameras;
 
@@ -90,23 +91,25 @@ class _MissionViewState extends State<MissionView> {
                     child: FittedBox(
                         fit: BoxFit.cover,
                         child: Container(
+                            alignment: Alignment.center,
                             width: cameraviewSize,
                             height: cameraviewSize *
                                 widget.controller.value.aspectRatio,
                             child: CameraPreview(widget.controller)))))),
+        // CameraPreview(widget.controller),
       ]),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
           onPressed: () async {
             final image = await widget.controller.takePicture();
-            final imagePath = image.path;
-            final currentContext = context;
+            final imagePath = File(image.path);
+            File croppedFile = await cropSquare(imagePath);
             if (!mounted) return;
             Navigator.push(
-                currentContext,
+                context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        DisplayPicture(imagePath: imagePath)));
+                        DisplayPicture(imagePath: croppedFile.path)));
           },
           child: const Icon(Icons.camera_alt)),
     );

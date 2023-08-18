@@ -23,7 +23,7 @@ class AreYouReady extends StatelessWidget {
                 child: Center(
                     child: ElevatedButton(
                         onPressed: () {
-                          Navigator.of(context).pushNamed("/aa");
+                          Navigator.of(context).pushNamed("/mission_view");
                         },
                         child: const Center(
                             child:

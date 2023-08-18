@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:target_photo_dash/views/homepage.dart';
 import 'package:target_photo_dash/views/playsitepage.dart';
 import 'package:target_photo_dash/views/areyouready.dart';
+import 'package:target_photo_dash/views/mission_view.dart';
+import 'package:target_photo_dash/views/display_picture.dart';
 
 void main() {
   runApp(const MainApp());
@@ -26,6 +28,8 @@ class MainApp extends StatelessWidget {
               const MyHomePage(title: title, version: version),
           "/single_play": (BuildContext context) => const PlaySitePage(),
           "/are_you_ready": (BuildContext context) => const AreYouReady(),
+          "/mission_view": (BuildContext context) => CameraLoading(),
+          //"/display_picture":(BuildContext context) => DisplayPicture(imagePath: imagePath),
           // "/multi_play": (BuildContext context) => const MultiPlay(),
         });
   }

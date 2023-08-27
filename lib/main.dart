@@ -3,7 +3,6 @@ import 'package:target_photo_dash/views/homepage.dart';
 import 'package:target_photo_dash/views/playsitepage.dart';
 import 'package:target_photo_dash/views/areyouready.dart';
 import 'package:target_photo_dash/views/mission_view.dart';
-import 'package:target_photo_dash/views/display_picture.dart';
 
 void main() {
   runApp(const MainApp());

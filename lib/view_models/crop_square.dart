@@ -8,11 +8,8 @@ Future<File> cropSquare(File originalImage) async {
   int minLength = image.width < image.height ? image.width : image.height;
 
   // 画像を正方形にクロップ
-  img.Image cropped = img.copyCrop(image,
-      x: ((image.width - minLength) ~/ 2),
-      y: ((image.height - minLength) ~/ 2),
-      width: minLength,
-      height: minLength);
+  img.Image cropped = img.copyCrop(image, ((image.width - minLength) ~/ 2),
+      ((image.height - minLength) ~/ 2), minLength, minLength);
 
   // クロップした画像を保存
   File croppedFile = File(originalImage.path)

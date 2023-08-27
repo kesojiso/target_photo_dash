@@ -54,8 +54,8 @@ class _MissionViewState extends State<MissionView> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final double cameraviewSize = size.width;
+    //final size = MediaQuery.of(context).size;
+    //final double cameraviewSize = size.width;
 
     if (!widget.controller.value.isInitialized) {
       return Container();
@@ -82,21 +82,21 @@ class _MissionViewState extends State<MissionView> {
             ],
           ),
         ),
-        Container(
-            width: cameraviewSize,
-            height: cameraviewSize,
-            child: ClipRect(
-                child: OverflowBox(
-                    alignment: Alignment.center,
-                    child: FittedBox(
-                        fit: BoxFit.cover,
-                        child: Container(
-                            alignment: Alignment.center,
-                            width: cameraviewSize,
-                            height: cameraviewSize *
-                                widget.controller.value.aspectRatio,
-                            child: CameraPreview(widget.controller)))))),
-        // CameraPreview(widget.controller),
+        // Container(
+        //     width: cameraviewSize,
+        //     height: cameraviewSize,
+        //     child: ClipRect(
+        //         child: OverflowBox(
+        //             alignment: Alignment.center,
+        //             child: FittedBox(
+        //                 fit: BoxFit.cover,
+        //                 child: Container(
+        //                     alignment: Alignment.center,
+        //                     width: cameraviewSize,
+        //                     height: cameraviewSize *
+        //                         widget.controller.value.aspectRatio,
+        //                     child: CameraPreview(widget.controller)))))),
+        CameraPreview(widget.controller),
       ]),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(

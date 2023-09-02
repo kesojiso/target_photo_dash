@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as image_lib;
 import 'package:tflite_flutter/tflite_flutter.dart';
-import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
+//import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
 
 import 'package:target_photo_dash/models/utils.dart';
 
@@ -36,7 +36,7 @@ class Classifier {
     try {
       _interpreter = interpreter ??
           await Interpreter.fromAsset(
-            '$modelFileName',
+            modelFileName,
             options: InterpreterOptions()..threads = 4,
           );
       final outputTensors = _interpreter!.getOutputTensors();
@@ -54,7 +54,7 @@ class Classifier {
   Future<void> loadLabels(List<String>? labels) async {
     try {
       _labels = labels ?? await rootBundle.loadString('assets/$labelFileName');
-      _labels.split
+      _labels.split;
     } on Exception catch (e) {
       print("Error while loading labels: $e");
     }

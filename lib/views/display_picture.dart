@@ -3,7 +3,7 @@ import 'dart:io';
 
 class DisplayPicture extends StatelessWidget {
   final String imagePath;
-  const DisplayPicture({required this.imagePath});
+  const DisplayPicture({super.key, required this.imagePath});
 
   @override
   Widget build(BuildContext context) {

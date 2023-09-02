@@ -7,6 +7,8 @@ import 'package:target_photo_dash/view_models/crop_square.dart';
 late List<CameraDescription> cameras;
 
 class CameraLoading extends StatelessWidget {
+  const CameraLoading({super.key});
+
   Future<CameraController> initCamera() async {
     final cameras = await availableCameras();
     final firstCamera = cameras.first;

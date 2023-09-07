@@ -1,7 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:image/image.dart' as image_lib;
-import 'package:flutter/material.dart';
-import 'dart:math';
+import 'package:google_mlkit_commons/google_mlkit_commons.dart';
+import 'package:flutter/services.dart';
 
 /// ImageUtils
 class ImageUtils {
@@ -50,29 +50,22 @@ class ImageUtils {
   }
 }
 
-class Recognition {
-  Recognition(this._id, this._label, this._score, this._location);
-  final int _id;
-  int get id => _id;
-  final String _label;
-  String get label => _label;
-
-  final double _score;
-  double get score => _score;
-
-  final Rect _location;
-  Rect get location => _location;
-
-  Rect getRenderLocation(Size actualPreviewSize, double pixelRatio) {
-    final ratioX = pixelRatio;
-    final ratioY = ratioX;
-
-    final transLeft = max(0.1, location.left * ratioX);
-    final transTop = max(0.1, location.top * ratioY);
-    final transWidth = min(location.width * ratioX, actualPreviewSize.width);
-    final transHeight = min(location.height * ratioY, actualPreviewSize.width);
-    final transformedRect =
-        Rect.fromLTWH(transLeft, transTop, transWidth, transHeight);
-    return transformedRect;
+InputImage cameraImageToInputImage(CameraImage image) {
+  final WriteBuffer allBytes = WriteBuffer();
+  for (int planeIndex = 0; planeIndex < image.planes.length; planeIndex++) {
+    allBytes.putUint8List(image.planes[planeIndex].bytes);
   }
+  final bytes = allBytes.done().buffer.asUint8List();
+  final plane = image.planes.first;
+  final Size imageSize = Size(image.width.toDouble(), image.height.toDouble());
+
+  return InputImage.fromBytes(
+    bytes: bytes,
+    metadata: InputImageMetadata(
+      size: imageSize,
+      rotation: InputImageRotation.rotation0deg,
+      format: InputImageFormat.yuv420,
+      bytesPerRow: plane.bytesPerRow,
+    ),
+  );
 }

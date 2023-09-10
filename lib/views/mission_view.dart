@@ -1,89 +1,46 @@
 import 'dart:async';
-
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:camera/camera.dart';
-import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
-import 'package:target_photo_dash/models/utils.dart';
 import 'dart:io';
-import 'package:target_photo_dash/views/display_picture.dart';
-import 'package:target_photo_dash/view_models/crop_square.dart';
-
-late List<CameraDescription> cameras;
-
-class CameraLoading extends StatelessWidget {
-  const CameraLoading({super.key});
-
-  Future<CameraController> initCamera() async {
-    final cameras = await availableCameras();
-    final firstCamera = cameras.first;
-    final controller = CameraController(firstCamera, ResolutionPreset.low);
-    await controller.initialize();
-    return controller;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<CameraController>(
-        future: initCamera(),
-        builder:
-            (BuildContext context, AsyncSnapshot<CameraController> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
-          } else if (snapshot.hasError) {
-            return Text('ERROR: ${snapshot.error}');
-          } else {
-            return MissionView(controller: snapshot.data!);
-          }
-        });
-  }
-}
+import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
 
 class MissionView extends StatefulWidget {
-  final CameraController controller;
-  const MissionView({required this.controller, super.key});
-
+  const MissionView({super.key});
   @override
   State<MissionView> createState() => _MissionViewState();
 }
 
 class _MissionViewState extends State<MissionView> {
-  final _labelStream = StreamController();
-  @override
-  void initState() {
-    super.initState();
-    setState(() {});
-    widget.controller.startImageStream((image) async {
-      final InputImage inputImage = cameraImageToInputImage(image);
+  final imagePicker = ImagePicker();
+  final StreamController<String> imagePathStreamController =
+      StreamController<String>();
+  final StreamController<List<ImageLabel>> labelStreamController =
+      StreamController<List<ImageLabel>>();
+
+  /// Image Pickerのカメラを使って画像を取得する
+  Future<void> getImageFromCamera() async {
+    final pickedFile = await imagePicker.pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      imagePathStreamController.sink.add(pickedFile.path);
+      final InputImage imageFile = InputImage.fromFilePath(pickedFile.path);
       final ImageLabelerOptions options =
-          ImageLabelerOptions(confidenceThreshold: 0.7);
+          ImageLabelerOptions(confidenceThreshold: 0.5);
       final imageLabeler = ImageLabeler(options: options);
       final List<ImageLabel> labels =
-          await imageLabeler.processImage(inputImage);
-      _labelStream.sink.add(labels);
-      for (ImageLabel label in labels) {
-        final String text = label.label;
-        final int index = label.index;
-        final double confidence = label.confidence;
-        print("-----------------------$text------------------------------");
-        print("-----------------------$index----------------------------");
-        print("-----------------------$confidence----------------------");
-      }
-    });
+          await imageLabeler.processImage(imageFile);
+      labelStreamController.sink.add(labels);
+    }
   }
 
   @override
   void dispose() {
-    widget.controller.dispose();
+    imagePathStreamController.close();
+    labelStreamController.close();
     super.dispose();
-    _labelStream.close();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.controller.value.isInitialized) {
-      return Container();
-    }
-
     return Scaffold(
       //backgroundColor: Colors.black,
       appBar: AppBar(
@@ -105,46 +62,42 @@ class _MissionViewState extends State<MissionView> {
             ],
           ),
         ),
-        CameraPreview(widget.controller),
         StreamBuilder(
-          stream: _labelStream.stream,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return const Text("snapshot.error");
-            }
-            switch (snapshot.connectionState) {
-              case ConnectionState.none:
-                return const Text("No Stream");
-              case ConnectionState.waiting:
-                return const Text("Stream Awaiting");
-              case ConnectionState.done:
-                return const Text("Stream Closed");
-              case ConnectionState.active:
-                return Expanded(
-                    child: ListView.builder(
-                        itemCount: 5,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                              title: Text("$index"),
-                              subtitle: Text(
-                                  "index:${snapshot.data![index].index}, label:${snapshot.data![index].label},confidence:${snapshot.data![index].confidence}"));
-                        }));
+          stream: imagePathStreamController.stream,
+          builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+            if (snapshot.hasData) {
+              return Image.file(File(snapshot.data!));
+            } else {
+              return Text(
+                "Take Target Picture!!",
+                style: Theme.of(context).textTheme.headlineLarge,
+              );
             }
           },
         ),
+        StreamBuilder(
+          stream: labelStreamController.stream,
+          builder: (BuildContext context, AsyncSnapshot<List?> snapshot) {
+            if (snapshot.hasData) {
+              return Expanded(
+                  child: ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (BuildContext context, index) {
+                        return ListTile(
+                            title: Text(snapshot.data![index].label),
+                            subtitle:
+                                Text('${snapshot.data![index].confidence}'));
+                      }));
+            } else {
+              return const Text("Loading");
+            }
+          },
+        )
       ]),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            final image = await widget.controller.takePicture();
-            final imagePath = File(image.path);
-            File croppedFile = await cropSquare(imagePath);
-            if (!mounted) return;
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        DisplayPicture(imagePath: croppedFile.path)));
+            getImageFromCamera();
           },
           child: const Icon(Icons.camera_alt)),
     );

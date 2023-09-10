@@ -3,9 +3,14 @@ import 'package:target_photo_dash/views/homepage.dart';
 import 'package:target_photo_dash/views/playsitepage.dart';
 import 'package:target_photo_dash/views/areyouready.dart';
 import 'package:target_photo_dash/views/mission_view.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(
+    const ProviderScope(
+      child: MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -27,7 +32,7 @@ class MainApp extends StatelessWidget {
               const MyHomePage(title: title, version: version),
           "/single_play": (BuildContext context) => const PlaySitePage(),
           "/are_you_ready": (BuildContext context) => const AreYouReady(),
-          "/mission_view": (BuildContext context) => const CameraLoading(),
+          "/mission_view": (BuildContext context) => const MissionView(),
           //"/display_picture":(BuildContext context) => DisplayPicture(imagePath: imagePath),
           // "/multi_play": (BuildContext context) => const MultiPlay(),
         });

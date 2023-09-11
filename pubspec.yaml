@@ -29,5 +29,4 @@ flutter:
   uses-material-design: true
   assets:
    - assets/pic_target_photo_dash_home.png
-   - assets/detect.tflite
-   - assets/labelmap.txt
+   - assets/labels.txt

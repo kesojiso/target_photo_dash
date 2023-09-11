@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
+import 'package:target_photo_dash/views/previvous_mission.dart';
 
 class MissionView extends StatefulWidget {
   const MissionView({super.key});
@@ -16,9 +17,10 @@ class _MissionViewState extends State<MissionView> {
       StreamController<String>();
   final StreamController<List<ImageLabel>> labelStreamController =
       StreamController<List<ImageLabel>>();
+  final PreviousMissionPage previousMissionPage = PreviousMissionPage();
 
   /// Image Pickerのカメラを使って画像を取得する
-  Future<void> getImageFromCamera() async {
+  Future<void> getImageAndInference() async {
     final pickedFile = await imagePicker.pickImage(source: ImageSource.camera);
     if (pickedFile != null) {
       imagePathStreamController.sink.add(pickedFile.path);
@@ -30,6 +32,15 @@ class _MissionViewState extends State<MissionView> {
           await imageLabeler.processImage(imageFile);
       labelStreamController.sink.add(labels);
     }
+  }
+
+  Future<String> getMissionWords() async {
+    String missionWord = "None";
+    previousMissionPage.dataStream.listen((data) {
+      missionWord = data.join(",");
+    });
+    print(missionWord);
+    return missionWord;
   }
 
   @override
@@ -47,18 +58,28 @@ class _MissionViewState extends State<MissionView> {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: const Text("Mission")),
       body: Column(children: [
-        const Center(
+        Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Padding(
+              const Padding(
                   padding: EdgeInsets.all(10.0),
                   child: Text("Target:", style: TextStyle(fontSize: 20))),
               Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: Text("Flower",
-                      style: TextStyle(
-                          fontSize: 30, fontWeight: FontWeight.bold))),
+                  padding: const EdgeInsets.all(10.0),
+                  child: FutureBuilder(
+                      future: getMissionWords(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<String> snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}'); // エラーが発生した場合
+                        } else {
+                          return Text('Fetched Data: ${snapshot.data}');
+                        }
+                      }))
             ],
           ),
         ),
@@ -89,7 +110,7 @@ class _MissionViewState extends State<MissionView> {
                                 Text('${snapshot.data![index].confidence}'));
                       }));
             } else {
-              return const Text("Loading");
+              return const Text("No Labels");
             }
           },
         )
@@ -97,7 +118,7 @@ class _MissionViewState extends State<MissionView> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            getImageFromCamera();
+            getImageAndInference();
           },
           child: const Icon(Icons.camera_alt)),
     );

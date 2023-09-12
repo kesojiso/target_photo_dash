@@ -17,7 +17,6 @@ class _MissionViewState extends State<MissionView> {
       StreamController<String>();
   final StreamController<List<ImageLabel>> labelStreamController =
       StreamController<List<ImageLabel>>();
-  final PreviousMissionPage previousMissionPage = PreviousMissionPage();
 
   /// Image Pickerのカメラを使って画像を取得する
   Future<void> getImageAndInference() async {
@@ -35,10 +34,11 @@ class _MissionViewState extends State<MissionView> {
   }
 
   Future<String> getMissionWords() async {
-    String missionWord = "None";
-    previousMissionPage.dataStream.listen((data) {
-      missionWord = data.join(",");
-    });
+    String missionWord;
+    final previousMissionPage = PreviousMissionPage();
+    await previousMissionPage.shareMissionWords();
+    List<String> streamdata = await previousMissionPage.dataStream.first;
+    missionWord = streamdata.join(",");
     print(missionWord);
     return missionWord;
   }

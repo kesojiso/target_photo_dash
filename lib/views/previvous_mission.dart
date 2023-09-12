@@ -6,10 +6,11 @@ import 'dart:math';
 
 class PreviousMissionPage extends StatelessWidget {
   PreviousMissionPage({super.key});
-  final missionWordsController = StreamController<Future<List<String>>>();
+  final missionWordsController = StreamController<List<String>>();
   Stream get dataStream => missionWordsController.stream;
-  void shareMissionWords() {
-    final pickedList = pick3Words();
+
+  Future<void> shareMissionWords() async {
+    final pickedList = await pick3Words();
     missionWordsController.sink.add(pickedList);
   }
 
@@ -42,7 +43,7 @@ class PreviousMissionPage extends StatelessWidget {
                 child: Center(
                     child: ElevatedButton(
                         onPressed: () {
-                          shareMissionWords();
+                          //shareMissionWords();
                           Navigator.of(context).pushNamed("/mission_view");
                         },
                         child: const Center(

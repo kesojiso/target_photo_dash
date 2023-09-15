@@ -31,7 +31,8 @@ class MainApp extends StatelessWidget {
           "/home": (BuildContext context) =>
               const MyHomePage(title: title, version: version),
           "/single_play": (BuildContext context) => const PlaySitePage(),
-          "/are_you_ready": (BuildContext context) => PreviousMissionPage(),
+          "/are_you_ready": (BuildContext context) =>
+              const PreviousMissionPage(),
           "/mission_view": (BuildContext context) => const MissionView(),
           //"/display_picture":(BuildContext context) => DisplayPicture(imagePath: imagePath),
           // "/multi_play": (BuildContext context) => const MultiPlay(),

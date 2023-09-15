@@ -1,27 +1,7 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'dart:math';
 
 class PreviousMissionPage extends StatelessWidget {
-  PreviousMissionPage({super.key});
-  final missionWordsController = StreamController<List<String>>();
-  Stream get dataStream => missionWordsController.stream;
-
-  Future<void> shareMissionWords() async {
-    final pickedList = await pick3Words();
-    missionWordsController.sink.add(pickedList);
-  }
-
-  Future<List<String>> pick3Words() async {
-    final labels = await rootBundle.loadString("assets/labels.txt");
-    final labelsList = labels.split("\n");
-    final random = Random();
-    final List<String> shuffleList = List.of(labelsList)..shuffle(random);
-    final List<String> pickedList = shuffleList.take(3).toList();
-    return pickedList;
-  }
+  const PreviousMissionPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +23,6 @@ class PreviousMissionPage extends StatelessWidget {
                 child: Center(
                     child: ElevatedButton(
                         onPressed: () {
-                          //shareMissionWords();
                           Navigator.of(context).pushNamed("/mission_view");
                         },
                         child: const Center(

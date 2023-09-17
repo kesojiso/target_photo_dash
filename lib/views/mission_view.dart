@@ -4,6 +4,15 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
 import 'package:target_photo_dash/models/pick_mission_words.dart';
+import 'package:target_photo_dash/views/result_page.dart';
+
+class Args {
+  List<bool> scoreList = [false, false, false];
+  int missionTerm = 0;
+  bool missionClearFlg = false;
+  List? targetWords;
+  List<ImageLabel>? labels;
+}
 
 class MissionView extends StatefulWidget {
   const MissionView({super.key});
@@ -14,10 +23,12 @@ class MissionView extends StatefulWidget {
 class _MissionViewState extends State<MissionView> {
   final imagePicker = ImagePicker();
   final StreamController<String> imagePathStreamController =
-      StreamController<String>();
+      StreamController.broadcast();
   final StreamController<List<ImageLabel>> labelStreamController =
-      StreamController<List<ImageLabel>>();
-  List<String>? missionWords;
+      StreamController.broadcast();
+  final StreamController<bool> missionJudgeController =
+      StreamController.broadcast();
+  final Args args = Args();
 
   /// 画像を取得し推論を行う
   Future<void> getImageAndInference() async {
@@ -28,22 +39,65 @@ class _MissionViewState extends State<MissionView> {
       final ImageLabelerOptions options =
           ImageLabelerOptions(confidenceThreshold: 0.5);
       final imageLabeler = ImageLabeler(options: options);
-      final List<ImageLabel> labels =
-          await imageLabeler.processImage(imageFile);
+      args.labels = await imageLabeler.processImage(imageFile);
       imageLabeler.close();
-      labelStreamController.sink.add(labels);
+      labelStreamController.sink.add(args.labels!);
+      args.missionClearFlg = judgeItemsInclusion(
+          labels: args.labels!,
+          targetWord: args.targetWords![args.missionTerm]);
+      missionJudgeController.sink.add(args.missionClearFlg);
+      args.scoreList =
+          _calcScore(args.missionClearFlg, args.missionTerm, args.scoreList);
+      setState(() {});
     }
   }
 
-  Future<void> _loadMissionWords() async {
-    missionWords = await getMissionWordsList();
+  Future<void> _loadTargetWords() async {
+    args.targetWords = await getTargetWordsList();
+    if (args.targetWords != null) {
+      setState(() {});
+    } else {
+      print("Failed to get TargetWordsList");
+    }
+  }
+
+  void _goToNextTask() {
+    if (args.missionTerm < 2) {
+      args.missionClearFlg = false;
+      args.labels = null;
+      args.missionTerm += 1;
+      setState(() {});
+      imagePathStreamController.sink.add("");
+      labelStreamController.sink.add([]);
+    } else {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ResultView(scoreList: args.scoreList)));
+    }
+  }
+
+  void _backToPreviousTask() {
+    args.missionClearFlg = false;
+    args.labels = null;
+    args.missionTerm -= 1;
     setState(() {});
+    imagePathStreamController.sink.add("");
+    labelStreamController.sink.add([]);
+  }
+
+  List<bool> _calcScore(
+      bool missionClearFlg, int missionTerm, List<bool> scoreList) {
+    if (scoreList[missionTerm] == false) {
+      scoreList[missionTerm] = missionClearFlg;
+    }
+    return scoreList;
   }
 
   @override
   void initState() {
     super.initState();
-    _loadMissionWords();
+    _loadTargetWords();
   }
 
   @override
@@ -61,9 +115,9 @@ class _MissionViewState extends State<MissionView> {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
             const Text("Target : "),
-            missionWords == null
+            args.targetWords == null
                 ? const CircularProgressIndicator()
-                : Text(missionWords![0],
+                : Text(args.targetWords![args.missionTerm],
                     style: Theme.of(context).textTheme.headlineLarge),
           ])),
       body: Center(
@@ -71,7 +125,7 @@ class _MissionViewState extends State<MissionView> {
         StreamBuilder(
           stream: imagePathStreamController.stream,
           builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
-            if (snapshot.hasData) {
+            if (snapshot.hasData && snapshot.data != "") {
               return Stack(children: [
                 Image.file(File(snapshot.data!)),
                 // Container(
@@ -79,26 +133,60 @@ class _MissionViewState extends State<MissionView> {
                 //   width: double.infinity,
                 //   height: double.infinity,
                 // ),
-                StreamBuilder(
-                  stream: labelStreamController.stream,
-                  builder:
-                      (BuildContext context, AsyncSnapshot<List?> snapshot) {
-                    if (snapshot.hasData) {
-                      return ConstrainedBox(
+                Column(children: [
+                  StreamBuilder(
+                    stream: missionJudgeController.stream,
+                    builder:
+                        (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                      if (snapshot.hasData) {
+                        return ConstrainedBox(
                           constraints: const BoxConstraints(maxHeight: 200),
-                          child: ListView.builder(
-                              itemCount: snapshot.data!.length,
-                              itemBuilder: (BuildContext context, index) {
-                                return ListTile(
-                                    title: Text(snapshot.data![index].label),
-                                    subtitle: Text(
-                                        '${snapshot.data![index].confidence}'));
-                              }));
-                    } else {
-                      return Container();
-                    }
-                  },
-                ),
+                          child: args.missionClearFlg == true
+                              ? const Text(
+                                  "OK",
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.green),
+                                )
+                              : const Text(
+                                  "NG",
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.red),
+                                ),
+                        );
+                      } else {
+                        return Container();
+                      }
+                    },
+                  ),
+                  StreamBuilder(
+                    stream: labelStreamController.stream,
+                    builder:
+                        (BuildContext context, AsyncSnapshot<List?> snapshot) {
+                      if (snapshot.hasData && snapshot.data != []) {
+                        return ConstrainedBox(
+                            constraints: const BoxConstraints(maxHeight: 200),
+                            child: ListView.builder(
+                                itemCount: snapshot.data!.length,
+                                itemBuilder: (BuildContext context, index) {
+                                  return ListTile(
+                                      title: Text(snapshot.data![index].label,
+                                          style: const TextStyle(
+                                              color: Colors.green)),
+                                      subtitle: Text(
+                                          '${snapshot.data![index].confidence}',
+                                          style: const TextStyle(
+                                              color: Colors.green)));
+                                }));
+                      } else {
+                        return Container();
+                      }
+                    },
+                  ),
+                ])
               ]);
             } else {
               return Column(children: [
@@ -108,9 +196,9 @@ class _MissionViewState extends State<MissionView> {
                 ),
                 Padding(
                     padding: const EdgeInsets.all(10.0),
-                    child: missionWords == null
+                    child: args.targetWords == null
                         ? const CircularProgressIndicator()
-                        : Text(missionWords![0],
+                        : Text(args.targetWords![args.missionTerm],
                             style: Theme.of(context).textTheme.headlineLarge))
               ]);
             }
@@ -121,38 +209,46 @@ class _MissionViewState extends State<MissionView> {
             onTap: () async {
               getImageAndInference();
             },
-            child: Container(
-              width: 60,
-              height: 60,
-              decoration: const BoxDecoration(
-                  color: Colors.grey, shape: BoxShape.circle),
-            )),
-        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            child: Stack(alignment: Alignment.center, children: [
+              Container(
+                width: 70,
+                height: 70,
+                decoration: const BoxDecoration(
+                    color: Colors.grey, shape: BoxShape.circle),
+              ),
+              Container(
+                width: 60,
+                height: 60,
+                decoration: const BoxDecoration(
+                    color: Colors.white, shape: BoxShape.circle),
+              ),
+              const Icon(Icons.camera, size: 55)
+            ])),
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Padding(
-              padding: const EdgeInsets.all(20),
-              child: ElevatedButton(
-                  onPressed: () async {
-                    getImageAndInference();
-                  },
-                  child: const Center(
-                      child: Text("Retake", style: TextStyle(fontSize: 30))))),
+              padding: const EdgeInsets.all(25),
+              child: args.missionTerm > 0
+                  ? ElevatedButton(
+                      onPressed: () async {
+                        _backToPreviousTask();
+                      },
+                      child: const Center(
+                          child: Text("Back", style: TextStyle(fontSize: 30))))
+                  : Container()),
           Padding(
             padding: const EdgeInsets.all(20),
             child: ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  _goToNextTask();
                 },
-                child: const Center(
-                    child: Text("Submit", style: TextStyle(fontSize: 30)))),
+                child: Center(
+                    child: args.missionTerm < 2
+                        ? const Text("Submit", style: TextStyle(fontSize: 30))
+                        : const Text("Finish",
+                            style: TextStyle(fontSize: 30)))),
           )
         ])
       ])),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      // floatingActionButton: FloatingActionButton(
-      //     onPressed: () async {
-      //       getImageAndInference();
-      //     },
-      //     child: const Icon(Icons.camera_alt)),
     );
   }
 }

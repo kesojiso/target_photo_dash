@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:target_photo_dash/views/homepage.dart';
-import 'package:target_photo_dash/views/playsitepage.dart';
+import 'package:target_photo_dash/views/result_page.dart';
 import 'package:target_photo_dash/views/previvous_mission.dart';
 import 'package:target_photo_dash/views/mission_view.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -30,10 +30,11 @@ class MainApp extends StatelessWidget {
         routes: <String, WidgetBuilder>{
           "/home": (BuildContext context) =>
               const MyHomePage(title: title, version: version),
-          "/single_play": (BuildContext context) => const PlaySitePage(),
-          "/are_you_ready": (BuildContext context) =>
-              const PreviousMissionPage(),
+          "/single_play": (BuildContext context) => const PreviousMissionPage(),
+          // "/are_you_ready": (BuildContext context) =>
+          //     const PreviousMissionPage(),
           "/mission_view": (BuildContext context) => const MissionView(),
+          //"/result": (BuildContext context) => const ResultView()
           //"/display_picture":(BuildContext context) => DisplayPicture(imagePath: imagePath),
           // "/multi_play": (BuildContext context) => const MultiPlay(),
         });

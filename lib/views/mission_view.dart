@@ -3,7 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
-import 'package:target_photo_dash/models/pick_mission_words.dart';
+import 'package:target_photo_dash/models/utils.dart';
 import 'package:target_photo_dash/views/result_page.dart';
 
 class Args {
@@ -110,7 +110,6 @@ class _MissionViewState extends State<MissionView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: Colors.black,
       appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
@@ -121,85 +120,91 @@ class _MissionViewState extends State<MissionView> {
                     style: Theme.of(context).textTheme.headlineLarge),
           ])),
       body: Center(
-          child: Column(children: [
+          child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
         StreamBuilder(
           stream: imagePathStreamController.stream,
           builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
             if (snapshot.hasData && snapshot.data != "") {
-              return Stack(children: [
+              return Stack(alignment: Alignment.center, children: [
                 Image.file(File(snapshot.data!)),
-                // Container(
-                //   color: Colors.white.withOpacity(0.5),
-                //   width: double.infinity,
-                //   height: double.infinity,
-                // ),
-                Column(children: [
-                  StreamBuilder(
-                    stream: missionJudgeController.stream,
-                    builder:
-                        (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                      if (snapshot.hasData) {
-                        return ConstrainedBox(
-                          constraints: const BoxConstraints(maxHeight: 200),
-                          child: args.missionClearFlg == true
-                              ? const Text(
-                                  "OK",
-                                  style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.green),
-                                )
-                              : const Text(
-                                  "NG",
-                                  style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.red),
-                                ),
-                        );
-                      } else {
-                        return Container();
-                      }
-                    },
-                  ),
-                  StreamBuilder(
-                    stream: labelStreamController.stream,
-                    builder:
-                        (BuildContext context, AsyncSnapshot<List?> snapshot) {
-                      if (snapshot.hasData && snapshot.data != []) {
-                        return ConstrainedBox(
-                            constraints: const BoxConstraints(maxHeight: 200),
-                            child: ListView.builder(
-                                itemCount: snapshot.data!.length,
-                                itemBuilder: (BuildContext context, index) {
-                                  return ListTile(
-                                      title: Text(snapshot.data![index].label,
-                                          style: const TextStyle(
-                                              color: Colors.green)),
-                                      subtitle: Text(
-                                          '${snapshot.data![index].confidence}',
-                                          style: const TextStyle(
-                                              color: Colors.green)));
-                                }));
-                      } else {
-                        return Container();
-                      }
-                    },
-                  ),
-                ])
+                Container(
+                    width: 200,
+                    height: 300,
+                    color: Colors.white.withOpacity(0.5),
+                    child: Column(
+                      children: [
+                        StreamBuilder(
+                          stream: missionJudgeController.stream,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<bool> snapshot) {
+                            if (snapshot.hasData) {
+                              return Container(
+                                child: args.missionClearFlg == true
+                                    ? const Text(
+                                        "OK",
+                                        style: TextStyle(
+                                            fontSize: 40,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.green),
+                                      )
+                                    : const Text(
+                                        "NG",
+                                        style: TextStyle(
+                                            fontSize: 40,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.red),
+                                      ),
+                              );
+                            } else {
+                              return Container();
+                            }
+                          },
+                        ),
+                        StreamBuilder(
+                          stream: labelStreamController.stream,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<List?> snapshot) {
+                            if (snapshot.hasData && snapshot.data != []) {
+                              return ConstrainedBox(
+                                  constraints:
+                                      const BoxConstraints(maxHeight: 200),
+                                  child: ListView.builder(
+                                      itemCount: snapshot.data!.length,
+                                      itemBuilder:
+                                          (BuildContext context, index) {
+                                        return Center(
+                                            child: Text(
+                                                '${snapshot.data![index].label} - ${snapshot.data![index].confidence.toStringAsFixed(2)}',
+                                                style: const TextStyle(
+                                                    color: Colors.green,
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.bold)));
+                                      }));
+                            } else {
+                              return Container();
+                            }
+                          },
+                        ),
+                      ],
+                    )),
               ]);
             } else {
               return Column(children: [
-                Text(
-                  "Take the picture below !!",
-                  style: Theme.of(context).textTheme.headlineSmall,
+                Padding(
+                  padding: const EdgeInsets.only(top: 30),
+                  child: Center(
+                      child: Text(
+                    "Take the picture below !!",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  )),
                 ),
                 Padding(
-                    padding: const EdgeInsets.all(10.0),
+                    padding: const EdgeInsets.only(top: 20.0),
                     child: args.targetWords == null
                         ? const CircularProgressIndicator()
                         : Text(args.targetWords![args.missionTerm],
-                            style: Theme.of(context).textTheme.headlineLarge))
+                            style: Theme.of(context).textTheme.headlineLarge)),
               ]);
             }
           },
@@ -226,26 +231,36 @@ class _MissionViewState extends State<MissionView> {
             ])),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Padding(
-              padding: const EdgeInsets.all(25),
+              padding: const EdgeInsets.all(20),
               child: args.missionTerm > 0
                   ? ElevatedButton(
-                      onPressed: () async {
+                      style: ElevatedButton.styleFrom(
+                          fixedSize: const Size(150, 70),
+                          backgroundColor: Colors.black),
+                      onPressed: () {
                         _backToPreviousTask();
                       },
                       child: const Center(
-                          child: Text("Back", style: TextStyle(fontSize: 30))))
+                          child: Text("Back",
+                              style: TextStyle(
+                                  fontSize: 20, color: Colors.white))))
                   : Container()),
           Padding(
             padding: const EdgeInsets.all(20),
             child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    fixedSize: const Size(150, 70),
+                    backgroundColor: Colors.black),
                 onPressed: () {
                   _goToNextTask();
                 },
                 child: Center(
                     child: args.missionTerm < 2
-                        ? const Text("Submit", style: TextStyle(fontSize: 30))
+                        ? const Text("Submit",
+                            style: TextStyle(fontSize: 20, color: Colors.white))
                         : const Text("Finish",
-                            style: TextStyle(fontSize: 30)))),
+                            style:
+                                TextStyle(fontSize: 20, color: Colors.white)))),
           )
         ])
       ])),

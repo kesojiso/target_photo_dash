@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:target_photo_dash/views/homepage.dart';
-import 'package:target_photo_dash/views/result_page.dart';
-import 'package:target_photo_dash/views/previvous_mission.dart';
-import 'package:target_photo_dash/views/mission_view.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import 'package:target_photo_dash/models/app_theme.dart';
 
 void main() {
   runApp(
@@ -23,20 +22,14 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
         title: title,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
+          primarySwatch: Colors.blue,
+          textTheme: AppTheme.textTheme,
         ),
         home: const MyHomePage(title: title, version: version),
         routes: <String, WidgetBuilder>{
           "/home": (BuildContext context) =>
               const MyHomePage(title: title, version: version),
-          "/single_play": (BuildContext context) => const PreviousMissionPage(),
-          // "/are_you_ready": (BuildContext context) =>
-          //     const PreviousMissionPage(),
-          "/mission_view": (BuildContext context) => const MissionView(),
-          //"/result": (BuildContext context) => const ResultView()
-          //"/display_picture":(BuildContext context) => DisplayPicture(imagePath: imagePath),
-          // "/multi_play": (BuildContext context) => const MultiPlay(),
         });
   }
 }

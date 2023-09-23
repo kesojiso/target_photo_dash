@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:target_photo_dash/models/app_theme.dart';
 
 class ResultView extends StatelessWidget {
   final List<bool> scoreList;
@@ -30,7 +31,6 @@ class ResultView extends StatelessWidget {
                       fixedSize: const Size(200, 70),
                       backgroundColor: Colors.black),
                   onPressed: () {
-                    //Navigator.of(context).pushNamed("/home");
                     Navigator.of(context).pushNamedAndRemoveUntil(
                       "/home",
                       (Route<dynamic> route) => false,

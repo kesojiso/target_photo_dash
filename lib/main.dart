@@ -23,7 +23,9 @@ class MainApp extends StatelessWidget {
         title: title,
         theme: ThemeData(
           useMaterial3: true,
-          primarySwatch: Colors.blue,
+          primaryColor: const Color.fromARGB(255, 245, 236, 177),
+          scaffoldBackgroundColor: const Color.fromARGB(255, 243, 232, 198),
+          fontFamily: AppTheme.fontName,
           textTheme: AppTheme.textTheme,
         ),
         home: const MyHomePage(title: title, version: version),

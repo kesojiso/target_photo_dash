@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'dart:math';
 import 'package:image_picker/image_picker.dart';
+import 'package:target_photo_dash/models/app_theme.dart';
 import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
 
 class MissionLogic {
@@ -15,9 +16,13 @@ class MissionLogic {
     return pickedList;
   }
 
-  Future<String> imagePick() async {
+  Future<String?> imagePick() async {
     final pickedFile = await imagePicker.pickImage(source: ImageSource.camera);
-    return pickedFile!.path;
+    if (pickedFile != null) {
+      return pickedFile.path;
+    } else {
+      return null;
+    }
   }
 
   Future<List<ImageLabel?>> inference(String path) async {

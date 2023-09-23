@@ -1,9 +1,8 @@
 import 'dart:async';
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
-import 'package:target_photo_dash/models/utils.dart';
+import 'package:target_photo_dash/models/mission_logic.dart';
 import 'package:target_photo_dash/views/result_page.dart';
 
 class Args {
@@ -11,7 +10,7 @@ class Args {
   int missionTerm = 0;
   bool missionClearFlg = false;
   List? targetWords;
-  List<ImageLabel>? labels;
+  List<ImageLabel?> labels = [];
 }
 
 class MissionView extends StatefulWidget {
@@ -21,39 +20,31 @@ class MissionView extends StatefulWidget {
 }
 
 class _MissionViewState extends State<MissionView> {
-  final imagePicker = ImagePicker();
   final StreamController<String> imagePathStreamController =
       StreamController.broadcast();
-  final StreamController<List<ImageLabel>> labelStreamController =
+  final StreamController<List<ImageLabel?>> labelStreamController =
       StreamController.broadcast();
   final StreamController<bool> missionJudgeController =
       StreamController.broadcast();
+  final MissionLogic missionLogic = MissionLogic();
   final Args args = Args();
 
   /// 画像を取得し推論を行う
   Future<void> getImageAndInference() async {
-    final pickedFile = await imagePicker.pickImage(source: ImageSource.camera);
-    if (pickedFile != null) {
-      imagePathStreamController.sink.add(pickedFile.path);
-      final InputImage imageFile = InputImage.fromFilePath(pickedFile.path);
-      final ImageLabelerOptions options =
-          ImageLabelerOptions(confidenceThreshold: 0.5);
-      final imageLabeler = ImageLabeler(options: options);
-      args.labels = await imageLabeler.processImage(imageFile);
-      imageLabeler.close();
-      labelStreamController.sink.add(args.labels!);
-      args.missionClearFlg = judgeItemsInclusion(
-          labels: args.labels!,
-          targetWord: args.targetWords![args.missionTerm]);
-      missionJudgeController.sink.add(args.missionClearFlg);
-      args.scoreList =
-          _calcScore(args.missionClearFlg, args.missionTerm, args.scoreList);
-      setState(() {});
-    }
+    final imagePath = await missionLogic.imagePick();
+    imagePathStreamController.sink.add(imagePath);
+    args.labels = await missionLogic.inference(imagePath);
+    labelStreamController.sink.add(args.labels);
+    args.missionClearFlg = missionLogic.judgeItemsInclusion(
+        labels: args.labels, targetWord: args.targetWords![args.missionTerm]);
+    missionJudgeController.sink.add(args.missionClearFlg);
+    args.scoreList =
+        _calcScore(args.missionClearFlg, args.missionTerm, args.scoreList);
+    setState(() {});
   }
 
   Future<void> _loadTargetWords() async {
-    args.targetWords = await getTargetWordsList();
+    args.targetWords = await missionLogic.getTargetWordsList();
     if (args.targetWords != null) {
       setState(() {});
     } else {
@@ -64,22 +55,23 @@ class _MissionViewState extends State<MissionView> {
   void _goToNextTask() {
     if (args.missionTerm < 2) {
       args.missionClearFlg = false;
-      args.labels = null;
+      args.labels = [];
       args.missionTerm += 1;
       setState(() {});
       imagePathStreamController.sink.add("");
       labelStreamController.sink.add([]);
     } else {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => ResultView(scoreList: args.scoreList)));
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+            builder: (context) => ResultView(scoreList: args.scoreList)),
+        (Route<dynamic> route) => false,
+      );
     }
   }
 
   void _backToPreviousTask() {
     args.missionClearFlg = false;
-    args.labels = null;
+    args.labels = [];
     args.missionTerm -= 1;
     setState(() {});
     imagePathStreamController.sink.add("");

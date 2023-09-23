@@ -30,7 +30,11 @@ class ResultView extends StatelessWidget {
                       fixedSize: const Size(200, 70),
                       backgroundColor: Colors.black),
                   onPressed: () {
-                    Navigator.of(context).pushNamed("/home");
+                    //Navigator.of(context).pushNamed("/home");
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      "/home",
+                      (Route<dynamic> route) => false,
+                    );
                   },
                   child: const Center(
                       child: Text("Home",

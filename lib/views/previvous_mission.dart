@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:target_photo_dash/models/app_theme.dart';
+import 'package:target_photo_dash/themes/app_theme.dart';
 import 'package:target_photo_dash/views/mission_view.dart';
 
 class PreviousMissionPage extends StatelessWidget {
@@ -14,7 +14,7 @@ class PreviousMissionPage extends StatelessWidget {
       children: [
         const Padding(
           padding: EdgeInsets.all(10),
-          child: Text("Are You Ready??", style: TextStyle(fontSize: 30)),
+          child: Text("Are You Ready??", style: AppTheme.display1),
         ),
         //const Spacer(),
         Padding(
@@ -22,8 +22,9 @@ class PreviousMissionPage extends StatelessWidget {
             child: Center(
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
+                        elevation: 10,
                         fixedSize: const Size(200, 70),
-                        backgroundColor: Colors.black),
+                        backgroundColor: AppTheme.nearlyBlack),
                     onPressed: () {
                       Navigator.push(
                           context,

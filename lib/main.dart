@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:target_photo_dash/views/homepage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:target_photo_dash/models/app_theme.dart';
+import 'package:target_photo_dash/themes/app_theme.dart';
 
 void main() {
   runApp(

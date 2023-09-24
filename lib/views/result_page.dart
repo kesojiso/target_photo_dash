@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:target_photo_dash/models/app_theme.dart';
+import 'package:target_photo_dash/themes/app_theme.dart';
 
 class ResultView extends StatelessWidget {
   final List<bool> scoreList;
@@ -13,23 +13,20 @@ class ResultView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // appBar: AppBar(
-        //   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        //   title: const Text("Result"),
-        // ),
         body: Center(
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-          const Text("Your Score is ...", style: TextStyle(fontSize: 30)),
-          Text("${scoreCalculator(scoreList).toString()}/3",
-              style: Theme.of(context).textTheme.headlineLarge),
+          const Text("Your Score is ...", style: AppTheme.headline),
+          Text("${scoreCalculator(scoreList).toString()} / 3",
+              style: AppTheme.display1),
           Padding(
               padding: const EdgeInsets.all(10.0),
               child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
+                      elevation: 10,
                       fixedSize: const Size(200, 70),
-                      backgroundColor: Colors.black),
+                      backgroundColor: AppTheme.nearlyBlack),
                   onPressed: () {
                     Navigator.of(context).pushNamedAndRemoveUntil(
                       "/home",

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
-import 'package:target_photo_dash/models/app_theme.dart';
+import 'package:target_photo_dash/themes/app_theme.dart';
 import 'package:target_photo_dash/models/mission_logic.dart';
 import 'package:target_photo_dash/views/result_page.dart';
 
@@ -106,11 +106,11 @@ class _MissionViewState extends State<MissionView> {
         appBar: AppBar(
             backgroundColor: Theme.of(context).primaryColor,
             title: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-              const Text("Target : "),
+              const Text("Target : ", style: AppTheme.title),
               args.targetWords == null
                   ? const CircularProgressIndicator()
                   : Text(args.targetWords![args.missionTerm],
-                      style: Theme.of(context).textTheme.headlineLarge),
+                      style: AppTheme.headline),
             ])),
         body: Center(
           child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
@@ -194,12 +194,12 @@ class _MissionViewState extends State<MissionView> {
                       ]));
                 } else {
                   return Column(children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 30),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 30),
                       child: Center(
                           child: Text(
-                        "Take the picture below !!",
-                        style: Theme.of(context).textTheme.headlineSmall,
+                        "Take this photo!!",
+                        style: AppTheme.headline,
                       )),
                     ),
                     Padding(
@@ -207,8 +207,7 @@ class _MissionViewState extends State<MissionView> {
                         child: args.targetWords == null
                             ? const CircularProgressIndicator()
                             : Text(args.targetWords![args.missionTerm],
-                                style:
-                                    Theme.of(context).textTheme.headlineLarge)),
+                                style: AppTheme.display1)),
                   ]);
                 }
               },
@@ -239,8 +238,9 @@ class _MissionViewState extends State<MissionView> {
                   child: args.missionTerm > 0
                       ? ElevatedButton(
                           style: ElevatedButton.styleFrom(
+                              elevation: 10,
                               fixedSize: const Size(150, 70),
-                              backgroundColor: Colors.black),
+                              backgroundColor: AppTheme.nearlyBlack),
                           onPressed: () {
                             _backToPreviousTask();
                           },
@@ -253,8 +253,9 @@ class _MissionViewState extends State<MissionView> {
                 padding: const EdgeInsets.all(20),
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
+                        elevation: 10,
                         fixedSize: const Size(150, 70),
-                        backgroundColor: Colors.black),
+                        backgroundColor: AppTheme.nearlyBlack),
                     onPressed: () {
                       _goToNextTask();
                     },

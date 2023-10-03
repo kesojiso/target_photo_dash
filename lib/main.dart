@@ -29,6 +29,7 @@ class MainApp extends StatelessWidget {
           textTheme: AppTheme.textTheme,
         ),
         home: const MyHomePage(title: title, version: version),
+        debugShowCheckedModeBanner: false,
         routes: <String, WidgetBuilder>{
           "/home": (BuildContext context) =>
               const MyHomePage(title: title, version: version),

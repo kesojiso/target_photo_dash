@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:target_photo_dash/main.dart';
 import 'package:target_photo_dash/themes/app_theme.dart';
 import 'package:target_photo_dash/views/mission_view.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PreviousMissionPage extends StatelessWidget {
+class PreviousMissionPage extends ConsumerWidget {
   const PreviousMissionPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
         body: Center(
             child: Column(
@@ -29,7 +31,10 @@ class PreviousMissionPage extends StatelessWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const MissionView()));
+                              builder: (context) => const MissionPage()));
+                      ref
+                          .read(targetWordListProvider.notifier)
+                          .getTargetWordsList();
                     },
                     child: const Center(
                         child: Text("OK!",

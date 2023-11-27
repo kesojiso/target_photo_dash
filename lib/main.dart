@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:target_photo_dash/view_models/mission_page/mission_result_vm.dart';
 import 'package:target_photo_dash/views/homepage.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:target_photo_dash/themes/app_theme.dart';
+import 'package:target_photo_dash/states/states.dart';
+import 'package:target_photo_dash/models/get_target_words_list.dart';
+import 'package:target_photo_dash/models/image_pick.dart';
+import 'package:target_photo_dash/models/inference.dart';
+import 'package:target_photo_dash/models/mission_result.dart';
+import 'package:target_photo_dash/view_models/mission_page/mission_term_vm.dart';
 
 void main() {
   runApp(
@@ -36,3 +43,27 @@ class MainApp extends StatelessWidget {
         });
   }
 }
+
+final targetWordListProvider =
+    StateNotifierProvider<TargetWordsListNotifier, TargetWordsListState>(
+        (ref) => TargetWordsListNotifier());
+
+final imagePickProvider =
+    StateNotifierProvider<ImagePickNotifier, ImagePickState>(
+        (ref) => ImagePickNotifier());
+
+final inferenceProvider =
+    StateNotifierProvider<InferenceNotifier, InferenceState>(
+        (ref) => InferenceNotifier(ref));
+
+final missionResultProvider =
+    StateNotifierProvider<MissionResultNotifier, MissionResultState>(
+        (ref) => MissionResultNotifier(ref));
+
+final missionPageProvider =
+    StateNotifierProvider<MissionPageStateNotifier, MissionTermState>(
+        (ref) => MissionPageStateNotifier());
+
+final scoreStateProvider =
+    StateNotifierProvider<ScoreStateNotifier, ScoreState>(
+        (ref) => ScoreStateNotifier(ref));

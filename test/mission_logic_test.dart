@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:target_photo_dash/models/mission_logic.dart';
+import 'package:target_photo_dash/models/mission_result.dart';
 import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';

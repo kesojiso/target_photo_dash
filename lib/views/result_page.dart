@@ -1,25 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:target_photo_dash/main.dart';
 import 'package:target_photo_dash/themes/app_theme.dart';
 
-class ResultView extends StatelessWidget {
-  final List<bool> scoreList;
-  const ResultView({super.key, required this.scoreList});
-
-  int scoreCalculator(List scoreList) {
-    int score = scoreList.where((value) => value == true).length;
-    return score;
-  }
-
+class ResultView extends ConsumerWidget {
+  const ResultView({super.key});
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final score = ref.watch(scoreStateProvider).score;
     return Scaffold(
         body: Center(
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
           const Text("Your Score is ...", style: AppTheme.headline),
-          Text("${scoreCalculator(scoreList).toString()} / 3",
-              style: AppTheme.display1),
+          Text("${score.toString()} / 3", style: AppTheme.display1),
           Padding(
               padding: const EdgeInsets.all(10.0),
               child: ElevatedButton(

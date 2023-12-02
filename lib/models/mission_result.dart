@@ -7,10 +7,10 @@ class MissionResultNotifier extends StateNotifier<MissionResultState> {
   final Ref ref;
 
   bool judgeInclusion() {
-    final targetWordList = ref.watch(targetWordListProvider).pickedList;
-    final missionTerm = ref.watch(missionPageProvider).missionTerm;
+    final targetWordList = ref.read(targetWordListProvider).pickedList;
+    final missionTerm = ref.read(missionPageProvider).missionTerm;
     final targetWord = targetWordList[missionTerm];
-    final labels = ref.watch(inferenceProvider).labels;
+    final labels = ref.read(inferenceProvider).labels;
     String labelReplaced;
     String targetWordReplaced;
     if (labels.isEmpty) {

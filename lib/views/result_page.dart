@@ -27,6 +27,7 @@ class ResultView extends ConsumerWidget {
                       "/home",
                       (Route<dynamic> route) => false,
                     );
+                    ref.invalidate(scoreStateProvider);
                   },
                   child: const Center(
                       child: Text("Home",

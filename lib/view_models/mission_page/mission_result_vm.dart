@@ -7,13 +7,14 @@ class ScoreStateNotifier extends StateNotifier<ScoreState> {
   final Ref ref;
 
   void updateScore() {
-    final missionTerm = ref.watch(missionPageProvider).missionTerm;
-    final isClear = ref.watch(missionResultProvider).clearFlg;
-    final scoreList = ref.watch(scoreStateProvider).scoreList;
+    final missionTerm = ref.read(missionPageProvider).missionTerm;
+    final isClear = ref.read(missionResultProvider).clearFlg;
+    List<bool> scoreList = List<bool>.from(state.scoreList);
+    int score;
     if (isClear) {
       scoreList[missionTerm] = true;
+      score = scoreList.where((value) => value == true).length;
+      state = state.copyWith(scoreList: scoreList, score: score);
     }
-    final score = scoreList.where((value) => value == true).length;
-    state = state.copyWith(scoreList: scoreList, score: score);
   }
 }

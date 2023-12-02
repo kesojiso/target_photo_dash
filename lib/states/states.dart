@@ -46,6 +46,6 @@ class ScoreState {
       {this.scoreList = const [false, false, false], this.score = 0});
   final List<bool> scoreList;
   final int score;
-  ScoreState copyWith({List<bool>? scoreList, int? score}) => ScoreState(
-      scoreList: scoreList ?? this.scoreList, score: score ?? this.score);
+  ScoreState copyWith({required List<bool> scoreList, required int score}) =>
+      ScoreState(scoreList: scoreList, score: score);
 }

@@ -9,6 +9,7 @@ class PreviousMissionPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.read(targetWordListProvider.notifier).getTargetWordsList();
     return Scaffold(
         body: Center(
             child: Column(
@@ -32,9 +33,6 @@ class PreviousMissionPage extends ConsumerWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => const MissionPage()));
-                      ref
-                          .read(targetWordListProvider.notifier)
-                          .getTargetWordsList();
                     },
                     child: const Center(
                         child: Text("OK!",

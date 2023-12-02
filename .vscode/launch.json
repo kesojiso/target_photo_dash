@@ -5,9 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "target_photo_dash",
+            "name": "target_photo_dash (debug)",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "flutterMode": "debug",
+            "program": "lib/main.dart"
         },
         {
             "name": "target_photo_dash (profile mode)",

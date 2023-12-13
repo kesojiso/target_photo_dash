@@ -49,3 +49,10 @@ class ScoreState {
   ScoreState copyWith({required List<bool> scoreList, required int score}) =>
       ScoreState(scoreList: scoreList, score: score);
 }
+
+class StoreImgPathState {
+  const StoreImgPathState({this.storeImgPathList = const ["", "", ""]});
+  final List<String> storeImgPathList;
+  StoreImgPathState copyWith(List<String> storeImgPathList) =>
+      StoreImgPathState(storeImgPathList: storeImgPathList);
+}

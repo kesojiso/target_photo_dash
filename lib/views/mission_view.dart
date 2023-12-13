@@ -58,6 +58,7 @@ class CameraButtonWidget extends ConsumerWidget {
           await ref.read(inferenceProvider.notifier).inference();
           ref.read(missionResultProvider.notifier).judgeInclusion();
           ref.read(scoreStateProvider.notifier).updateScore();
+          ref.read(storeImageStateProvider.notifier).addImage();
         },
         child: Stack(alignment: Alignment.center, children: [
           Container(
@@ -149,16 +150,16 @@ class StackContainer extends ConsumerWidget {
     if (filePath != "") {
       return Container(
           padding: const EdgeInsets.all(20),
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 2 / 3,
+          width: ref.read(screenSizeProvider).width,
+          height: ref.read(screenSizeProvider).height * 2 / 3,
           child: Stack(alignment: Alignment.center, children: [
             Image.file(
               File(filePath),
               fit: BoxFit.contain,
             ),
             Container(
-                width: MediaQuery.of(context).size.width * 2 / 3,
-                height: MediaQuery.of(context).size.height * 1 / 2,
+                width: ref.read(screenSizeProvider).width * 2 / 3,
+                height: ref.read(screenSizeProvider).height * 1 / 2,
                 color: Colors.white.withOpacity(0.5),
                 child: const Column(
                   children: [

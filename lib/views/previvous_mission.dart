@@ -33,6 +33,8 @@ class PreviousMissionPage extends ConsumerWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => const MissionPage()));
+                      final screenSize = MediaQuery.of(context).size;
+                      ref.read(screenSizeProvider.notifier).state = screenSize;
                     },
                     child: const Center(
                         child: Text("OK!",

@@ -56,3 +56,16 @@ class StoreImgPathState {
   StoreImgPathState copyWith(List<String> storeImgPathList) =>
       StoreImgPathState(storeImgPathList: storeImgPathList);
 }
+
+class TempTimerState {
+  const TempTimerState({this.restTime = 30});
+  final int restTime;
+  TempTimerState copyWith(int restTime) => TempTimerState(restTime: restTime);
+}
+
+class ClearTimeLogState {
+  const ClearTimeLogState({this.clearTimeList = const [-1, -1, -1]});
+  final List<int> clearTimeList;
+  ClearTimeLogState copyWith(List<int> clearTimeList) =>
+      ClearTimeLogState(clearTimeList: clearTimeList);
+}

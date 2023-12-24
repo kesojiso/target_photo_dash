@@ -9,26 +9,65 @@ class MissionPage extends ConsumerWidget {
   const MissionPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Oops!'),
+              content: const Text('can not back to previous pages'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('close'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      },
+      child: Scaffold(
         appBar: AppBar(
-            backgroundColor: Theme.of(context).primaryColor,
-            title: const Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text("Target : ", style: AppTheme.title),
-                  TargetWordTextWidget()
-                ])),
+          backgroundColor: Theme.of(context).primaryColor,
+          automaticallyImplyLeading: false,
+          title: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Target : ", style: AppTheme.title),
+              TargetWordTextWidget(),
+              Spacer(),
+              TimerWidget()
+            ],
+          ),
+        ),
         body: const Center(
           child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
             StackContainer(),
             Spacer(),
-            CameraButtonWidget(),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              BackButtonWidget(),
-              NextButtonWidget(),
-            ])
+            CameraButtonSelectorWidget(),
+            NextButtonWidget(),
           ]),
-        ));
+        ),
+      ),
+    );
+  }
+}
+
+class TimerWidget extends ConsumerWidget {
+  const TimerWidget({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final restTime = ref.watch(tempTimerProvider).restTime;
+    return Row(children: [
+      const Icon(Icons.timer_outlined),
+      Text('00:${restTime.toString().padLeft(2, "0")}',
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+    ]);
   }
 }
 
@@ -48,19 +87,42 @@ class TargetWordTextWidget extends ConsumerWidget {
   }
 }
 
+class CameraButtonSelectorWidget extends ConsumerWidget {
+  const CameraButtonSelectorWidget({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final restTime = ref.watch(tempTimerProvider).restTime;
+    return Stack(
+      children: [
+        Offstage(
+          offstage: restTime == 0, // 残時間が０ならCameraButtonWidgetを除外
+          child: const CameraButtonWidget(),
+        ),
+        Offstage(
+          offstage: restTime != 0, // 残時間が０でないならDummyCameraButtonWidgetを除外
+          child: const DummyCameraButtonWidget(),
+        ),
+      ],
+    );
+  }
+}
+
 class CameraButtonWidget extends ConsumerWidget {
   const CameraButtonWidget({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return InkWell(
-        onTap: () async {
-          await ref.read(imagePickProvider.notifier).imagePick();
-          await ref.read(inferenceProvider.notifier).inference();
-          ref.read(missionResultProvider.notifier).judgeInclusion();
-          ref.read(scoreStateProvider.notifier).updateScore();
-          ref.read(storeImageStateProvider.notifier).addImage();
-        },
-        child: Stack(alignment: Alignment.center, children: [
+      onTap: () async {
+        await ref.read(imagePickProvider.notifier).imagePick();
+        await ref.read(inferenceProvider.notifier).inference();
+        ref.read(missionResultProvider.notifier).judgeInclusion();
+        ref.read(clearTimeLogStateProvider.notifier).logClearTime();
+        ref.read(scoreStateProvider.notifier).updateScore();
+        ref.read(storeImageStateProvider.notifier).addImage();
+      },
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
           Container(
             width: 70,
             height: 70,
@@ -74,33 +136,59 @@ class CameraButtonWidget extends ConsumerWidget {
                 color: Colors.white, shape: BoxShape.circle),
           ),
           const Icon(Icons.camera, size: 55)
-        ]));
+        ],
+      ),
+    );
   }
 }
 
-class BackButtonWidget extends ConsumerWidget {
-  const BackButtonWidget({Key? key}) : super(key: key);
+class DummyCameraButtonWidget extends ConsumerWidget {
+  const DummyCameraButtonWidget({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final missionTermState = ref.watch(missionPageProvider);
-    final missionTermNotifier = ref.watch(missionPageProvider.notifier);
-    return Padding(
-        padding: const EdgeInsets.all(20),
-        child: missionTermState.missionTerm > 0
-            ? ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    elevation: 10,
-                    fixedSize: const Size(150, 70),
-                    backgroundColor: AppTheme.nearlyBlack),
-                onPressed: () {
-                  missionTermNotifier.decrement();
-                  ref.invalidate(inferenceProvider);
-                  ref.invalidate(imagePickProvider);
-                },
-                child: const Center(
-                    child: Text("Back",
-                        style: TextStyle(fontSize: 20, color: Colors.white))))
-            : Container());
+    return InkWell(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Time Up!'),
+              content: const Text('Go to next mission!'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('close'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            width: 70,
+            height: 70,
+            decoration:
+                const BoxDecoration(color: Colors.grey, shape: BoxShape.circle),
+          ),
+          Container(
+            width: 60,
+            height: 60,
+            decoration:
+                const BoxDecoration(color: Colors.grey, shape: BoxShape.circle),
+          ),
+          const Icon(
+            Icons.block,
+            size: 55,
+            color: Colors.black,
+          )
+        ],
+      ),
+    );
   }
 }
 
@@ -123,12 +211,14 @@ class NextButtonWidget extends ConsumerWidget {
       child: ElevatedButton(
           style: ElevatedButton.styleFrom(
               elevation: 10,
-              fixedSize: const Size(150, 70),
+              fixedSize: const Size(300, 70),
               backgroundColor: AppTheme.nearlyBlack),
           onPressed: () {
             missionTermNotifier.increment();
             ref.invalidate(inferenceProvider);
             ref.invalidate(imagePickProvider);
+            ref.read(tempTimerProvider.notifier).stopTimer();
+            ref.read(tempTimerProvider.notifier).startTimer(30);
             finishNavigate();
           },
           child: Center(
@@ -149,38 +239,47 @@ class StackContainer extends ConsumerWidget {
     final filePath = imagePickState.filePath;
     if (filePath != "") {
       return Container(
-          padding: const EdgeInsets.all(20),
-          width: ref.read(screenSizeProvider).width,
-          height: ref.read(screenSizeProvider).height * 2 / 3,
-          child: Stack(alignment: Alignment.center, children: [
+        padding: const EdgeInsets.all(20),
+        width: ref.read(screenSizeProvider).width,
+        height: ref.read(screenSizeProvider).height * 2 / 3,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
             Image.file(
               File(filePath),
               fit: BoxFit.contain,
             ),
             Container(
-                width: ref.read(screenSizeProvider).width * 2 / 3,
-                height: ref.read(screenSizeProvider).height * 1 / 2,
-                color: Colors.white.withOpacity(0.5),
-                child: const Column(
-                  children: [
-                    TaskResultWidget(),
-                    ShowInferLabelWidget(),
-                  ],
-                )),
-          ]));
-    } else {
-      return const Column(children: [
-        Padding(
-          padding: EdgeInsets.only(top: 30),
-          child: Center(
-              child: Text(
-            "Take this photo!!",
-            style: AppTheme.headline,
-          )),
+              width: ref.read(screenSizeProvider).width * 2 / 3,
+              height: ref.read(screenSizeProvider).height * 1 / 2,
+              color: Colors.white.withOpacity(0.5),
+              child: const Column(
+                children: [
+                  TaskResultWidget(),
+                  ShowInferLabelWidget(),
+                ],
+              ),
+            ),
+          ],
         ),
-        Padding(
-            padding: EdgeInsets.only(top: 20.0), child: TargetWordTextWidget())
-      ]);
+      );
+    } else {
+      return const Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(top: 30),
+            child: Center(
+              child: Text(
+                "Take this photo!!",
+                style: AppTheme.headline,
+              ),
+            ),
+          ),
+          Padding(
+              padding: EdgeInsets.only(top: 20.0),
+              child: TargetWordTextWidget()),
+        ],
+      );
     }
   }
 }
@@ -215,18 +314,23 @@ class ShowInferLabelWidget extends ConsumerWidget {
     final labels = inferenceState.labels;
     if (labels.isNotEmpty) {
       return ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 200),
-          child: ListView.builder(
-              itemCount: inferenceState.labels.length,
-              itemBuilder: (BuildContext context, index) {
-                return Center(
-                    child: Text(
-                        '${labels[index].label} - ${labels[index].confidence.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                            color: Colors.green,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold)));
-              }));
+        constraints: const BoxConstraints(maxHeight: 200),
+        child: ListView.builder(
+          itemCount: inferenceState.labels.length,
+          itemBuilder: (BuildContext context, index) {
+            return Center(
+              child: Text(
+                '${labels[index].label} - ${labels[index].confidence.toStringAsFixed(2)}',
+                style: const TextStyle(
+//                            color: Colors.green,
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
+            );
+          },
+        ),
+      );
     } else {
       return Container();
     }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:target_photo_dash/view_models/mission_page/update_score.dart';
 import 'package:target_photo_dash/views/homepage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,6 +10,9 @@ import 'package:target_photo_dash/models/inference.dart';
 import 'package:target_photo_dash/view_models/mission_page/store_picture.dart';
 import 'package:target_photo_dash/models/mission_result.dart';
 import 'package:target_photo_dash/view_models/mission_page/mission_term_vm.dart';
+import 'package:target_photo_dash/view_models/mission_page/temp_timer.dart';
+import 'package:target_photo_dash/view_models/mission_page/clear_time_log.dart';
+import 'package:target_photo_dash/view_models/mission_page/update_score.dart';
 
 void main() {
   runApp(
@@ -46,6 +48,10 @@ class MainApp extends StatelessWidget {
   }
 }
 
+final tempTimerProvider =
+    StateNotifierProvider<TempTimerStateNotifier, TempTimerState>(
+        (ref) => TempTimerStateNotifier(ref));
+
 final screenSizeProvider = StateProvider<Size>((ref) => Size.zero);
 
 final targetWordListProvider =
@@ -75,3 +81,7 @@ final scoreStateProvider =
 final storeImageStateProvider =
     StateNotifierProvider<StoreImgPathStateNotifier, StoreImgPathState>(
         (ref) => StoreImgPathStateNotifier(ref));
+
+final clearTimeLogStateProvider =
+    StateNotifierProvider<ClearTimeLogStateNotifier, ClearTimeLogState>(
+        (ref) => ClearTimeLogStateNotifier(ref));

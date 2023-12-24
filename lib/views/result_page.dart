@@ -10,34 +10,44 @@ class ResultView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final score = ref.watch(scoreStateProvider).score;
     return Scaffold(
-        body: Center(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-          const Text("Your Score is ...", style: AppTheme.headline),
-          Text("${score.toString()} / 3", style: AppTheme.display1),
-          const DisplayResultImage(),
-          Padding(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            const Text("Your Score is ...", style: AppTheme.headline),
+            Text("${score.toString()} / 3", style: AppTheme.display1),
+            const DisplayResultImage(),
+            Padding(
               padding: const EdgeInsets.all(10.0),
               child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      elevation: 10,
-                      fixedSize: const Size(200, 70),
-                      backgroundColor: AppTheme.nearlyBlack),
-                  onPressed: () {
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      "/home",
-                      (Route<dynamic> route) => false,
-                    );
-                    ref.invalidate(scoreStateProvider);
-                  },
-                  child: const Center(
-                      child: Text("Home",
-                          style: TextStyle(
-                            fontSize: 30,
-                            color: Colors.white,
-                          ))))),
-        ])));
+                style: ElevatedButton.styleFrom(
+                    elevation: 10,
+                    fixedSize: const Size(200, 70),
+                    backgroundColor: AppTheme.nearlyBlack),
+                onPressed: () {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    "/home",
+                    (Route<dynamic> route) => false,
+                  );
+                  ref.invalidate(scoreStateProvider);
+                  ref.invalidate(storeImageStateProvider);
+                  ref.invalidate(clearTimeLogStateProvider);
+                },
+                child: const Center(
+                  child: Text(
+                    "Home",
+                    style: TextStyle(
+                      fontSize: 30,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -47,29 +57,58 @@ class DisplayResultImage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final storeImgPathList =
         ref.watch(storeImageStateProvider).storeImgPathList;
+    final targetWordList = ref.watch(targetWordListProvider).pickedList;
+    final scoreList = ref.watch(scoreStateProvider).scoreList;
+    final clearTimeList = ref.watch(clearTimeLogStateProvider).clearTimeList;
     return Center(
       child: Table(
         border: TableBorder.all(),
         children: [
-          const TableRow(children: [
-            Center(child: Text("1")),
-            Center(child: Text("2")),
-            Center(child: Text("3")),
-          ]),
-          TableRow(children: [
-            Center(
-                child: storeImgPathList[0] != ""
-                    ? Image.file(File(storeImgPathList[0]))
-                    : const Text("No Image")),
-            Center(
-                child: storeImgPathList[1] != ""
-                    ? Image.file(File(storeImgPathList[1]))
-                    : const Text("No Image")),
-            Center(
-                child: storeImgPathList[2] != ""
-                    ? Image.file(File(storeImgPathList[2]))
-                    : const Text("No Image")),
-          ])
+          TableRow(
+            children: List.generate(
+              targetWordList.length,
+              (index) => Center(
+                child: Text(targetWordList[index], style: AppTheme.headline),
+              ),
+            ),
+          ),
+          TableRow(
+            children: List.generate(
+              scoreList.length,
+              (index) => Center(
+                child: scoreList[index]
+                    ? const Text("OK!",
+                        style: TextStyle(color: Colors.green, fontSize: 30))
+                    : const Text(
+                        "NG",
+                        style: TextStyle(color: Colors.red, fontSize: 30),
+                      ),
+              ),
+            ),
+          ),
+          TableRow(
+            children: List.generate(
+              clearTimeList.length,
+              (index) => Center(
+                child: Text(
+                  clearTimeList[index] != -1
+                      ? "${clearTimeList[index]} sec"
+                      : "- sec",
+                  style: AppTheme.headline,
+                ),
+              ),
+            ),
+          ),
+          TableRow(
+            children: List.generate(
+              storeImgPathList.length,
+              (index) => Center(
+                child: storeImgPathList[index] != ""
+                    ? Image.file(File(storeImgPathList[index]))
+                    : const Text("No Image"),
+              ),
+            ),
+          ),
         ],
       ),
     );

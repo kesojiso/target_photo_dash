@@ -1,7 +1,14 @@
 import 'package:flutter/services.dart';
 import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:target_photo_dash/states/states.dart';
+
+// TargetWordsList
+class TargetWordsListState {
+  const TargetWordsListState({this.pickedList = const []});
+  final List<String> pickedList;
+  TargetWordsListState copyWith(List<String> pickedList) =>
+      TargetWordsListState(pickedList: pickedList);
+}
 
 class TargetWordsListNotifier extends StateNotifier<TargetWordsListState> {
   TargetWordsListNotifier() : super(const TargetWordsListState());
@@ -15,3 +22,7 @@ class TargetWordsListNotifier extends StateNotifier<TargetWordsListState> {
     state = state.copyWith(pickedList);
   }
 }
+
+final targetWordListProvider =
+    StateNotifierProvider<TargetWordsListNotifier, TargetWordsListState>(
+        (ref) => TargetWordsListNotifier());

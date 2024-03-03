@@ -1,8 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:target_photo_dash/states/states.dart';
 
-class MissionPageStateNotifier extends StateNotifier<MissionTermState> {
-  MissionPageStateNotifier() : super(const MissionTermState());
+class MissionTermState {
+  final int missionTerm;
+  const MissionTermState({this.missionTerm = 0});
+  MissionTermState copyWith(int missionTerm) =>
+      MissionTermState(missionTerm: missionTerm);
+}
+
+class MissionTermStateNotifier extends StateNotifier<MissionTermState> {
+  MissionTermStateNotifier() : super(const MissionTermState());
 
   void increment() {
     if (state.missionTerm < 2) {
@@ -20,3 +26,7 @@ class MissionPageStateNotifier extends StateNotifier<MissionTermState> {
     }
   }
 }
+
+final missionTermProvider =
+    StateNotifierProvider<MissionTermStateNotifier, MissionTermState>(
+        (ref) => MissionTermStateNotifier());

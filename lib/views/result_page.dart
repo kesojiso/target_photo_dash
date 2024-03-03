@@ -1,14 +1,15 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:target_photo_dash/main.dart';
+import 'package:target_photo_dash/models/mission_result_logic.dart';
+import 'package:target_photo_dash/models/get_target_words_list.dart';
 import 'package:target_photo_dash/themes/app_theme.dart';
 
 class ResultView extends ConsumerWidget {
   const ResultView({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final score = ref.watch(scoreStateProvider).score;
+    final score = calcScore(ref);
     return Scaffold(
       body: Center(
         child: Column(
@@ -29,9 +30,7 @@ class ResultView extends ConsumerWidget {
                     "/home",
                     (Route<dynamic> route) => false,
                   );
-                  ref.invalidate(scoreStateProvider);
-                  ref.invalidate(storeImageStateProvider);
-                  ref.invalidate(clearTimeLogStateProvider);
+                  ref.invalidate(resultStateProvider);
                 },
                 child: const Center(
                   child: Text(
@@ -55,11 +54,10 @@ class DisplayResultImage extends ConsumerWidget {
   const DisplayResultImage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final storeImgPathList =
-        ref.watch(storeImageStateProvider).storeImgPathList;
     final targetWordList = ref.watch(targetWordListProvider).pickedList;
-    final scoreList = ref.watch(scoreStateProvider).scoreList;
-    final clearTimeList = ref.watch(clearTimeLogStateProvider).clearTimeList;
+    final storeImgPathList = ref.watch(resultStateProvider).imagePathList;
+    final scoreList = ref.watch(resultStateProvider).scoreList;
+    final clearTimeList = ref.watch(resultStateProvider).clearTimeList;
     return Center(
       child: Table(
         border: TableBorder.all(),
@@ -113,4 +111,9 @@ class DisplayResultImage extends ConsumerWidget {
       ),
     );
   }
+}
+
+int calcScore(WidgetRef ref) {
+  List<bool> scoreList = ref.read(resultStateProvider).scoreList;
+  return scoreList.where((value) => value == true).length;
 }

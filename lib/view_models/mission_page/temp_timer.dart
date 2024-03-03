@@ -1,6 +1,11 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:target_photo_dash/states/states.dart';
+
+class TempTimerState {
+  const TempTimerState({this.timer = 0});
+  final int timer;
+  TempTimerState copyWith(int timer) => TempTimerState(timer: timer);
+}
 
 class TempTimerStateNotifier extends StateNotifier<TempTimerState> {
   Timer? _timer;
@@ -8,12 +13,12 @@ class TempTimerStateNotifier extends StateNotifier<TempTimerState> {
   final Ref ref;
 
   void startTimer(int duration) {
-    state = state.copyWith(duration);
+    state = state.copyWith(0);
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (state.restTime == 0) {
+      if (state.timer == duration) {
         _timer?.cancel();
       } else {
-        state = state.copyWith(state.restTime - 1);
+        state = state.copyWith(state.timer + 1);
       }
     });
   }
@@ -28,3 +33,7 @@ class TempTimerStateNotifier extends StateNotifier<TempTimerState> {
     super.dispose();
   }
 }
+
+final tempTimerProvider =
+    StateNotifierProvider<TempTimerStateNotifier, TempTimerState>(
+        (ref) => TempTimerStateNotifier(ref));

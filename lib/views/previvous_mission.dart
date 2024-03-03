@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:target_photo_dash/main.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:target_photo_dash/themes/app_theme.dart';
 import 'package:target_photo_dash/views/mission_view.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:target_photo_dash/models/get_target_words_list.dart';
+import 'package:target_photo_dash/view_models/mission_page/temp_timer.dart';
 
 class PreviousMissionPage extends ConsumerWidget {
   const PreviousMissionPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.read(targetWordListProvider.notifier).getTargetWordsList();
     return Scaffold(
       body: Center(
         child: Column(
@@ -35,12 +35,13 @@ class PreviousMissionPage extends ConsumerWidget {
                       fixedSize: const Size(200, 70),
                       backgroundColor: AppTheme.nearlyBlack),
                   onPressed: () {
+                    ref
+                        .read(targetWordListProvider.notifier)
+                        .getTargetWordsList();
                     Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const MissionPage()));
-                    final screenSize = MediaQuery.of(context).size;
-                    ref.read(screenSizeProvider.notifier).state = screenSize;
                     ref.read(tempTimerProvider.notifier).stopTimer();
                     ref.read(tempTimerProvider.notifier).startTimer(30);
                   },

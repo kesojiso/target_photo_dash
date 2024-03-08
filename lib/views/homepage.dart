@@ -9,56 +9,26 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
     return Scaffold(
-        body: SafeArea(
-      child: Center(
+      body: SafeArea(
+        child: Center(
           child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Text(title,
-                style:
-                    const TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
-          ),
-          Stack(children: [
-            Image.asset("assets/pic_target_photo_dash_home.png"),
-            Positioned(
-              right: 30,
-              top: 0,
-              child: FloatingActionButton(
-                  shape: const CircleBorder(),
-                  backgroundColor: AppTheme.nearlyBlack,
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Mission'),
-                          content: const Text(
-                              'We will give you three words, so please take a picture that corresponds to the word.\nWe will judge pass or fail with using image recognition system.'),
-                          actions: <Widget>[
-                            TextButton(
-                              child: const Text('close'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                  child: const Icon(Icons.question_mark,
-                      color: AppTheme.nearlyWhite, size: 40)),
-            ),
-          ]),
-          Container(
-            padding: const EdgeInsets.only(bottom: 40),
-            child: Column(children: [
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
               Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: ElevatedButton(
+                padding: const EdgeInsets.all(10),
+                child: Text(title,
+                    style: const TextStyle(
+                        fontSize: 40, fontWeight: FontWeight.bold)),
+              ),
+              StackImage(screenSize: screenSize),
+              Container(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: Column(children: [
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           elevation: 10,
                           fixedSize: const Size(250, 70),
@@ -71,14 +41,19 @@ class MyHomePage extends StatelessWidget {
                                     const PreviousMissionPage()));
                       },
                       child: const Center(
-                          child: Text("Single Play",
-                              style: TextStyle(
-                                fontSize: 30,
-                                color: Colors.white,
-                              ))))),
-              Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: ElevatedButton(
+                        child: Text(
+                          "Single Play",
+                          style: TextStyle(
+                            fontSize: 30,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           elevation: 10,
                           fixedSize: const Size(250, 70),
@@ -104,15 +79,71 @@ class MyHomePage extends StatelessWidget {
                         );
                       },
                       child: const Center(
-                          child: Text("Multi Play",
-                              style: TextStyle(
-                                fontSize: 30,
-                                color: Colors.white,
-                              )))))
-            ]),
-          )
-        ],
-      )),
-    ));
+                        child: Text(
+                          "Multi Play",
+                          style: TextStyle(
+                            fontSize: 30,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ]),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class StackImage extends StatelessWidget {
+  const StackImage({
+    super.key,
+    required this.screenSize,
+  });
+
+  final Size screenSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(children: [
+      Container(
+        width: screenSize.width,
+        height: screenSize.height - 301,
+        child: Image.asset("assets/pic_target_photo_dash_home.png"),
+      ),
+      Positioned(
+        right: 30,
+        top: 0,
+        child: FloatingActionButton(
+            shape: const CircleBorder(),
+            backgroundColor: AppTheme.nearlyBlack,
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Mission'),
+                    content: const Text(
+                        'We will give you three words, so please take a picture that corresponds to the word.\nWe will judge pass or fail with using image recognition system.'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('close'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: const Icon(Icons.question_mark,
+                color: AppTheme.nearlyWhite, size: 40)),
+      ),
+    ]);
   }
 }

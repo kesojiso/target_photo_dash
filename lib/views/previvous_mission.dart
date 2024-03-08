@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:target_photo_dash/themes/app_theme.dart';
-import 'package:target_photo_dash/views/mission_view.dart';
+import 'package:target_photo_dash/views/mission_view/mission_view.dart';
 import 'package:target_photo_dash/models/get_target_words_list.dart';
 import 'package:target_photo_dash/view_models/mission_page/temp_timer.dart';
 

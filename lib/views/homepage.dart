@@ -1,4 +1,6 @@
+import 'package:target_photo_dash/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:target_photo_dash/views/previvous_mission.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key, required this.title, required this.version});
@@ -7,41 +9,135 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //final screenSize = MediaQuery.of(context).size;
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text("HomePage"),
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Text(title,
+                    style: const TextStyle(
+                        fontSize: 40, fontWeight: FontWeight.bold)),
+              ),
+              const Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [QuestionFAB()]),
+              Expanded(
+                child: Image.asset("assets/pic_target_photo_dash_home.png",
+                    fit: BoxFit.cover),
+              ),
+              Container(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: Column(children: [
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          elevation: 10,
+                          fixedSize: const Size(250, 70),
+                          backgroundColor: AppTheme.nearlyBlack),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const PreviousMissionPage()));
+                      },
+                      child: const Center(
+                        child: Text(
+                          "Single Play",
+                          style: TextStyle(
+                            fontSize: 30,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          elevation: 10,
+                          fixedSize: const Size(250, 70),
+                          backgroundColor: AppTheme.nearlyBlack),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Not Available'),
+                              content: const Text(
+                                  'Sorry, this featurer is under development.'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('close'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: const Center(
+                        child: Text(
+                          "Multi Play",
+                          style: TextStyle(
+                            fontSize: 30,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ]),
+              )
+            ],
+          ),
         ),
-        body: Center(
-            child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Text(title,
-                  style: const TextStyle(
-                      fontSize: 40, fontWeight: FontWeight.bold)),
-            ),
-            Image.asset("assets/pic_target_photo_dash_home.png"),
-            Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed("/single_play");
-                    },
-                    child: const Center(
-                        child: Text("Single Play",
-                            style: TextStyle(fontSize: 30))))),
-            Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pushNamed("/multi_play");
-                  },
-                  child: const Center(
-                      child:
-                          Text("Multi Play", style: TextStyle(fontSize: 30))),
-                ))
-          ],
-        )));
+      ),
+    );
+  }
+}
+
+class QuestionFAB extends StatelessWidget {
+  const QuestionFAB({
+    super.key,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 20.0),
+      child: FloatingActionButton(
+          shape: const CircleBorder(),
+          backgroundColor: AppTheme.nearlyBlack,
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Mission'),
+                  content: const Text(
+                      'We will give you three words, so please take a picture that corresponds to the word.\nWe will judge pass or fail with using image recognition system.'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: const Text('close'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          child: const Icon(Icons.question_mark,
+              color: AppTheme.nearlyWhite, size: 40)),
+    );
   }
 }

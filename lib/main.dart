@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:target_photo_dash/views/homepage.dart';
-import 'package:target_photo_dash/views/playsitepage.dart';
-import 'package:target_photo_dash/views/areyouready.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:target_photo_dash/themes/app_theme.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(
+    const ProviderScope(
+      child: MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -14,19 +18,21 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     const title = 'Target Photo Dash';
     const version = '0.1.0';
+
     return MaterialApp(
         title: title,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
+          primaryColor: const Color.fromARGB(255, 245, 236, 177),
+          scaffoldBackgroundColor: const Color.fromARGB(255, 243, 232, 198),
+          fontFamily: AppTheme.fontName,
+          textTheme: AppTheme.textTheme,
         ),
         home: const MyHomePage(title: title, version: version),
+        debugShowCheckedModeBanner: false,
         routes: <String, WidgetBuilder>{
           "/home": (BuildContext context) =>
               const MyHomePage(title: title, version: version),
-          "/single_play": (BuildContext context) => const PlaySitePage(),
-          "/are_you_ready": (BuildContext context) => const AreYouReady(),
-          // "/multi_play": (BuildContext context) => const MultiPlay(),
         });
   }
 }

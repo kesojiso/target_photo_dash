@@ -98,7 +98,7 @@ class ResultCards extends ConsumerWidget {
                   style: AppTheme.headline,
                 ),
                 storeImgPathList[index] != ""
-                    ? Image.file(File(storeImgPathList[0]))
+                    ? Image.file(File(storeImgPathList[index]))
                     : const Text("No Image"),
               ],
             ),

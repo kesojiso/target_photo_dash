@@ -9,7 +9,7 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
+    //final screenSize = MediaQuery.of(context).size;
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -22,7 +22,13 @@ class MyHomePage extends StatelessWidget {
                     style: const TextStyle(
                         fontSize: 40, fontWeight: FontWeight.bold)),
               ),
-              StackImage(screenSize: screenSize),
+              const Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [QuestionFAB()]),
+              Expanded(
+                child: Image.asset("assets/pic_target_photo_dash_home.png",
+                    fit: BoxFit.cover),
+              ),
               Container(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: Column(children: [
@@ -99,51 +105,39 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-class StackImage extends StatelessWidget {
-  const StackImage({
+class QuestionFAB extends StatelessWidget {
+  const QuestionFAB({
     super.key,
-    required this.screenSize,
   });
-
-  final Size screenSize;
-
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      Container(
-        width: screenSize.width,
-        height: screenSize.height - 301,
-        child: Image.asset("assets/pic_target_photo_dash_home.png"),
-      ),
-      Positioned(
-        right: 30,
-        top: 0,
-        child: FloatingActionButton(
-            shape: const CircleBorder(),
-            backgroundColor: AppTheme.nearlyBlack,
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Mission'),
-                    content: const Text(
-                        'We will give you three words, so please take a picture that corresponds to the word.\nWe will judge pass or fail with using image recognition system.'),
-                    actions: <Widget>[
-                      TextButton(
-                        child: const Text('close'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            child: const Icon(Icons.question_mark,
-                color: AppTheme.nearlyWhite, size: 40)),
-      ),
-    ]);
+    return Padding(
+      padding: const EdgeInsets.only(right: 20.0),
+      child: FloatingActionButton(
+          shape: const CircleBorder(),
+          backgroundColor: AppTheme.nearlyBlack,
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Mission'),
+                  content: const Text(
+                      'We will give you three words, so please take a picture that corresponds to the word.\nWe will judge pass or fail with using image recognition system.'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: const Text('close'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          child: const Icon(Icons.question_mark,
+              color: AppTheme.nearlyWhite, size: 40)),
+    );
   }
 }

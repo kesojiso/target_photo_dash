@@ -23,7 +23,7 @@ class StackContainer extends ConsumerWidget {
           children: [
             Image.file(
               File(filePath),
-              fit: BoxFit.fill,
+              fit: BoxFit.contain,
             ),
             Container(
               margin: const EdgeInsets.all(30),
